@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KMC Modules</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+  .topbar { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 20px; }
+  h1 { font-size: 18px; color: #333; }
+  .reset-btn {
+    background: #fff; border: 1px solid #ccc; border-radius: 6px;
+    padding: 6px 14px; font-size: 13px; color: #555; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .reset-btn:hover { background: #fee; border-color: #c00; color: #c00; }
+  .screenshot-btn {
+    background: #fff; border: 1px solid #ccc; border-radius: 6px;
+    padding: 6px 14px; font-size: 13px; color: #555; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .screenshot-btn:hover { background: #eef4ff; border-color: #2980c4; color: #2980c4; }
+  .name-modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    z-index: 1000; align-items: center; justify-content: center;
+  }
+  .name-modal-overlay.show { display: flex; }
+  .name-modal {
+    background: #fff; border-radius: 10px; padding: 24px 28px; min-width: 300px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px;
+  }
+  .name-modal h2 { font-size: 15px; color: #333; }
+  .name-modal input {
+    border: 1px solid #ccc; border-radius: 6px; padding: 8px 10px;
+    font-size: 14px; outline: none; width: 100%;
+  }
+  .name-modal input:focus { border-color: #2980c4; }
+  .name-modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .name-modal-btns button {
+    padding: 7px 18px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid #ccc;
+  }
+  .btn-confirm { background: #2980c4; color: white; border-color: #2980c4; }
+  .btn-confirm:hover { background: #1f6aa5; }
+  .btn-cancel { background: #fff; color: #555; }
+  .btn-cancel:hover { background: #f5f5f5; }
+  .grid { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; }
+  .column { min-width: 180px; flex: 1; display: flex; flex-direction: column; }
+
+  /* Header */
+  .col-header {
+    color: white; font-weight: bold; font-size: 13px;
+    text-align: center; padding: 8px 8px 4px; border-radius: 6px 6px 0 0;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .col-header.procurement { background: #e85d26; }
+  .col-header.sales       { background: #2e9e4f; }
+  .col-header.inventory   { background: #e8a020; }
+  .col-header.support     { background: #2980c4; }
+  .col-header.projects    { background: #7b5ea7; }
+  .col-header.tools       { background: #cc2a2a; }
+
+  /* Editable title */
+  .col-title {
+    background: transparent; border: none; outline: none;
+    color: white; font-weight: bold; font-size: 13px;
+    text-align: center; width: 100%; cursor: text;
+    border-bottom: 1px dashed rgba(255,255,255,0.4);
+    padding-bottom: 2px;
+  }
+  .col-title:focus { border-bottom: 1px solid white; }
+
+  /* Suggestion box */
+  .col-suggestion {
+    background: rgba(255,255,255,0.15); border: none; outline: none;
+    color: #000; font-size: 13px; width: 100%; border-radius: 4px;
+    padding: 4px 6px; resize: none; min-height: 38px;
+    placeholder-color: rgba(255,255,255,0.6);
+    font-family: Arial, sans-serif;
+  }
+  .col-suggestion::placeholder { color: rgba(0,0,0,0.45); font-style: italic; }
+  .col-suggestion:focus { background: rgba(255,255,255,0.25); outline: none; }
+
+  /* Items */
+  .item-list {
+    background: #fff; border: 1px solid #ddd; border-top: none;
+    border-radius: 0 0 6px 6px; padding: 6px; flex: 1;
+    min-height: 40px;
+  }
+  .item {
+    background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 4px;
+    padding: 6px 10px; margin-bottom: 4px; font-size: 13px; color: #333;
+    cursor: grab; user-select: none; transition: background 0.15s, box-shadow 0.15s;
+  }
+  .item:hover { background: #eef4ff; border-color: #aac; }
+  .item.sortable-ghost { opacity: 0.35; }
+  .item.sortable-chosen { cursor: grabbing; box-shadow: 0 4px 12px rgba(0,0,0,0.2); background: #e8f0fe; }
+
+  .saved-badge {
+    position: fixed; bottom: 20px; right: 20px; background: #2e9e4f;
+    color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .saved-badge.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>KMC Modules</h1>
+  <button class="reset-btn" onclick="resetOrder()">↺ Reset to default</button>
+  <button class="screenshot-btn" onclick="openNameModal()">📷 Save Screenshot</button>
+</div>
+
+<!-- Name modal -->
+<div class="name-modal-overlay" id="nameModal">
+  <div class="name-modal">
+    <h2>Save Screenshot</h2>
+    <input type="text" id="nameInput" placeholder="Enter your name" />
+    <div class="name-modal-btns">
+      <button class="btn-cancel" onclick="closeNameModal()">Cancel</button>
+      <button class="btn-confirm" onclick="takeScreenshot()">Save</button>
+    </div>
+  </div>
+</div>
+<div class="grid" id="grid"></div>
+<div class="saved-badge" id="badge">✓ Saved</div>
+
+<script>
+const DEFAULT_DATA = {
+  "PROCUREMENT & TPMO": {
+    cls: "procurement",
+    items: ["BIO AC","Contacts","Invoices","IT Services Charge","Leads","Organizations","Price Books","Purchase Request","Sales Orders","Services"]
+  },
+  "SALES": {
+    cls: "sales",
+    items: ["BCP Clients","CKT Escalation List","Contacts","Organizations","Products","Quotes","Services","SMS Notifier"]
+  },
+  "INVENTORY": {
+    cls: "inventory",
+    items: ["Assets","Asset Contact Name","AssetDocuments","AssetMovementForm","AssetRepair","BioDevices","Cabling Tech Assets","CKT Inventory","Contacts","Company Entity Name","Customer Success Particulars","Customer Success Personnel","CustomerSuccessPermits","DID Inventory","ExternalAssets","Network Inventory","Non-IT Assets","Organizations","PezaModule","Products","Product/Service Templates","Server Inventory","Vendors"]
+  },
+  "SUPPORT": {
+    cls: "support",
+    items: ["OSP Dashboard","Contacts","Contact Emails","HRTicketingSystem","NOC Maintenance","NOC Outage","Organizations","PRDirectory","Service Contracts","Service Requests","SMSContacts","SMS Notifier","Solutions Support Portal"]
+  },
+  "PROJECTS": {
+    cls: "projects",
+    items: ["Contacts","Organizations","Projects","Project Milestones","Project Tasks"]
+  },
+  "TOOLS": {
+    cls: "tools",
+    items: ["AccessCloudControl","Account Managers","Bookmarks","BudgetingTool","CanvassingTool","DigitalSignature","DigitalSignatureTemplate","Document Designer","Email Templates","GatePassTemplate","GenConBiddingAuto...","HRTicketingSystemAdmin","MOP","NOC Notification","Our Sites","OSP Version Control","PortalAdmin","PowerBiDashboard","PingPhony","Product/Service Templates","PR-Reviewer","QrTemplate","Recycle Bin","Reports & Dashboards","Sales Order Report","Site","Summary Report","SupportPortalAdmin","TicketingAdmin","vtPrint Labels","WFH Tracker"]
+  }
+};
+
+function showBadge() {
+  const badge = document.getElementById('badge');
+  badge.classList.add('show');
+  clearTimeout(badge._t);
+  badge._t = setTimeout(() => badge.classList.remove('show'), 1800);
+}
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('kmc_modules_order');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return null;
+}
+
+function saveAll() {
+  const result = { items: {}, names: {}, suggestions: {} };
+  document.querySelectorAll('.column').forEach(col => {
+    const key = col.dataset.key;
+    result.items[key] = Array.from(col.querySelectorAll('.item')).map(el => el.textContent);
+    result.names[key] = col.querySelector('.col-title').value;
+    result.suggestions[key] = col.querySelector('.col-suggestion').value;
+  });
+  localStorage.setItem('kmc_modules_order', JSON.stringify(result));
+  showBadge();
+}
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem('kmc_modules_order');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // support old format (plain array per key)
+    if (parsed && !parsed.items) return { items: parsed, names: {}, suggestions: {} };
+    return parsed;
+  } catch(e) { return null; }
+}
+
+function buildGrid() {
+  const saved = loadSaved();
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  for (const [key, meta] of Object.entries(DEFAULT_DATA)) {
+    const items = (saved?.items?.[key]) ? saved.items[key] : meta.items;
+    const customName = saved?.names?.[key] ?? key;
+    const suggestion = saved?.suggestions?.[key] ?? '';
+
+    const col = document.createElement('div');
+    col.className = 'column';
+    col.dataset.key = key;
+
+    // Header with editable title + suggestion textarea
+    const header = document.createElement('div');
+    header.className = `col-header ${meta.cls}`;
+
+    const titleInput = document.createElement('input');
+    titleInput.className = 'col-title';
+    titleInput.type = 'text';
+    titleInput.value = customName;
+    titleInput.title = 'Click to rename';
+    titleInput.addEventListener('input', saveAll);
+
+    const suggBox = document.createElement('textarea');
+    suggBox.className = 'col-suggestion';
+    suggBox.placeholder = 'Suggested changes…';
+    suggBox.value = suggestion;
+    suggBox.rows = 2;
+    suggBox.addEventListener('input', saveAll);
+    // prevent drag from triggering while typing
+    suggBox.addEventListener('mousedown', e => e.stopPropagation());
+
+    header.appendChild(titleInput);
+    header.appendChild(suggBox);
+    col.appendChild(header);
+
+    const list = document.createElement('div');
+    list.className = 'item-list';
+    items.forEach(name => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.textContent = name;
+      list.appendChild(div);
+    });
+    col.appendChild(list);
+    grid.appendChild(col);
+
+    Sortable.create(list, {
+      group: 'modules',
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      onEnd() { saveAll(); }
+    });
+  }
+}
+
+function openNameModal() {
+  document.getElementById('nameModal').classList.add('show');
+  setTimeout(() => document.getElementById('nameInput').focus(), 100);
+}
+
+function closeNameModal() {
+  document.getElementById('nameModal').classList.remove('show');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeNameModal();
+  if (e.key === 'Enter' && document.getElementById('nameModal').classList.contains('show')) takeScreenshot();
+});
+
+function takeScreenshot() {
+  const name = document.getElementById('nameInput').value.trim() || 'unknown';
+  closeNameModal();
+
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const dateStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const timeStr = `${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+  const filename = `KMC-Modules_${name}_${dateStr}_${timeStr}.png`;
+
+  html2canvas(document.body, { scale: 1.5, useCORS: true }).then(canvas => {
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = filename;
+    a.click();
+  });
+}
+
+function resetOrder() {
+  if (!confirm('Reset all columns to their original order and names?')) return;
+  localStorage.removeItem('kmc_modules_order');
+  buildGrid();
+}
+
+buildGrid();
+</script>
+</body>
+</html>
