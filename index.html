@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KMC Modules</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+  .topbar { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 20px; }
+  h1 { font-size: 18px; color: #333; }
+  .reset-btn {
+    background: #fff; border: 1px solid #ccc; border-radius: 6px;
+    padding: 6px 14px; font-size: 13px; color: #555; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .reset-btn:hover { background: #fee; border-color: #c00; color: #c00; }
+  .grid { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; }
+  .column { min-width: 180px; flex: 1; display: flex; flex-direction: column; }
+  .col-header {
+    color: white; font-weight: bold; font-size: 13px;
+    text-align: center; padding: 10px 8px; border-radius: 6px 6px 0 0;
+  }
+  .col-header.procurement { background: #e85d26; }
+  .col-header.sales       { background: #2e9e4f; }
+  .col-header.inventory   { background: #e8a020; }
+  .col-header.support     { background: #2980c4; }
+  .col-header.projects    { background: #7b5ea7; }
+  .col-header.tools       { background: #cc2a2a; }
+  .item-list {
+    background: #fff; border: 1px solid #ddd; border-top: none;
+    border-radius: 0 0 6px 6px; padding: 6px; flex: 1;
+    min-height: 40px;
+  }
+  .item {
+    background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 4px;
+    padding: 6px 10px; margin-bottom: 4px; font-size: 13px; color: #333;
+    cursor: grab; user-select: none; transition: background 0.15s, box-shadow 0.15s;
+  }
+  .item:hover { background: #eef4ff; border-color: #aac; }
+  .item.sortable-ghost { opacity: 0.35; }
+  .item.sortable-chosen { cursor: grabbing; box-shadow: 0 4px 12px rgba(0,0,0,0.2); background: #e8f0fe; }
+  .saved-badge {
+    position: fixed; bottom: 20px; right: 20px; background: #2e9e4f;
+    color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .saved-badge.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>KMC Modules</h1>
+  <button class="reset-btn" onclick="resetOrder()">↺ Reset to default</button>
+</div>
+<div class="grid" id="grid"></div>
+<div class="saved-badge" id="badge">✓ Order saved</div>
+
+<script>
+const DEFAULT_DATA = {
+  "PROCUREMENT & TPMO": {
+    cls: "procurement",
+    items: ["BIO AC","Contacts","Invoices","IT Services Charge","Leads","Organizations","Price Books","Purchase Request","Sales Orders","Services"]
+  },
+  "SALES": {
+    cls: "sales",
+    items: ["BCP Clients","CKT Escalation List","Contacts","Organizations","Products","Quotes","Services","SMS Notifier"]
+  },
+  "INVENTORY": {
+    cls: "inventory",
+    items: ["Assets","Asset Contact Name","AssetDocuments","AssetMovementForm","AssetRepair","BioDevices","Cabling Tech Assets","CKT Inventory","Contacts","Company Entity Name","Customer Success Particulars","Customer Success Personnel","CustomerSuccessPermits","DID Inventory","ExternalAssets","Network Inventory","Non-IT Assets","Organizations","PezaModule","Products","Product/Service Templates","Server Inventory","Vendors"]
+  },
+  "SUPPORT": {
+    cls: "support",
+    items: ["OSP Dashboard","Contacts","Contact Emails","HRTicketingSystem","NOC Maintenance","NOC Outage","Organizations","PRDirectory","Service Contracts","Service Requests","SMSContacts","SMS Notifier","Solutions Support Portal"]
+  },
+  "PROJECTS": {
+    cls: "projects",
+    items: ["Contacts","Organizations","Projects","Project Milestones","Project Tasks"]
+  },
+  "TOOLS": {
+    cls: "tools",
+    items: ["AccessCloudControl","Account Managers","Bookmarks","BudgetingTool","CanvassingTool","DigitalSignature","DigitalSignatureTemplate","Document Designer","Email Templates","GatePassTemplate","GenConBiddingAuto...","HRTicketingSystemAdmin","MOP","NOC Notification","Our Sites","OSP Version Control","PortalAdmin","PowerBiDashboard","PingPhony","Product/Service Templates","PR-Reviewer","QrTemplate","Recycle Bin","Reports & Dashboards","Sales Order Report","Site","Summary Report","SupportPortalAdmin","TicketingAdmin","vtPrint Labels","WFH Tracker"]
+  }
+};
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('kmc_modules_order');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return null;
+}
+
+function saveData(data) {
+  localStorage.setItem('kmc_modules_order', JSON.stringify(data));
+  const badge = document.getElementById('badge');
+  badge.classList.add('show');
+  clearTimeout(badge._t);
+  badge._t = setTimeout(() => badge.classList.remove('show'), 1800);
+}
+
+function getCurrentOrder() {
+  const result = {};
+  document.querySelectorAll('.column').forEach(col => {
+    const key = col.dataset.key;
+    result[key] = Array.from(col.querySelectorAll('.item')).map(el => el.textContent);
+  });
+  return result;
+}
+
+function buildGrid() {
+  const saved = loadData();
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  for (const [key, meta] of Object.entries(DEFAULT_DATA)) {
+    const items = (saved && saved[key]) ? saved[key] : meta.items;
+
+    const col = document.createElement('div');
+    col.className = 'column';
+    col.dataset.key = key;
+
+    const header = document.createElement('div');
+    header.className = `col-header ${meta.cls}`;
+    header.textContent = key;
+    col.appendChild(header);
+
+    const list = document.createElement('div');
+    list.className = 'item-list';
+    items.forEach(name => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.textContent = name;
+      list.appendChild(div);
+    });
+    col.appendChild(list);
+    grid.appendChild(col);
+
+    Sortable.create(list, {
+      group: 'modules',
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      onEnd() { saveData(getCurrentOrder()); }
+    });
+  }
+}
+
+function resetOrder() {
+  if (!confirm('Reset all columns to their original order?')) return;
+  localStorage.removeItem('kmc_modules_order');
+  buildGrid();
+}
+
+buildGrid();
+</script>
+</body>
+</html>
