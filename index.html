@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KMC Modules</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+  .topbar { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  h1 { font-size: 18px; color: #333; }
+  .topbar-btn {
+    background: #fff; border: 1px solid #ccc; border-radius: 6px;
+    padding: 6px 14px; font-size: 13px; color: #555; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .topbar-btn:hover { background: #fee; border-color: #c00; color: #c00; }
+  .screenshot-btn:hover { background: #eef4ff !important; border-color: #2980c4 !important; color: #2980c4 !important; }
+
+  .legend {
+    display: flex; align-items: center; justify-content: center;
+    gap: 18px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #444; }
+  .legend-swatch { width: 22px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.15); flex-shrink: 0; }
+  .legend-swatch.none     { background: #f9f9f9; }
+  .legend-swatch.unused   { background: #b94040; }
+  .legend-swatch.outdated { background: #7b5ea7; }
+  .legend-swatch.priority { background: #f1c40f; }
+
+  .name-modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    z-index: 1000; align-items: center; justify-content: center;
+  }
+  .name-modal-overlay.show { display: flex; }
+  .name-modal {
+    background: #fff; border-radius: 10px; padding: 24px 28px; min-width: 300px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 12px;
+  }
+  .name-modal h2 { font-size: 15px; color: #333; }
+  .name-modal input { border: 1px solid #ccc; border-radius: 6px; padding: 8px 10px; font-size: 14px; outline: none; width: 100%; }
+  .name-modal input:focus { border-color: #2980c4; }
+  .name-modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .name-modal-btns button { padding: 7px 18px; border-radius: 6px; font-size: 13px; cursor: pointer; border: 1px solid #ccc; }
+  .btn-confirm { background: #2980c4; color: white; border-color: #2980c4; }
+  .btn-confirm:hover { background: #1f6aa5; }
+  .btn-cancel { background: #fff; color: #555; }
+  .btn-cancel:hover { background: #f5f5f5; }
+
+  .ctx-menu {
+    display: none; position: fixed; z-index: 2000;
+    background: #fff; border: 1px solid #ddd; border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15); overflow: hidden; min-width: 180px;
+  }
+  .ctx-menu.show { display: block; }
+  .ctx-menu-title { padding: 8px 14px; font-size: 11px; color: #999; border-bottom: 1px solid #eee; text-transform: uppercase; letter-spacing: 0.5px; }
+  .ctx-option { display: flex; align-items: center; gap: 10px; padding: 9px 14px; font-size: 13px; cursor: pointer; color: #333; transition: background 0.1s; }
+  .ctx-option:hover { background: #f5f5f5; }
+  .ctx-dot { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.15); }
+  .ctx-dot.none     { background: #f9f9f9; }
+  .ctx-dot.unused   { background: #b94040; }
+  .ctx-dot.outdated { background: #7b5ea7; }
+  .ctx-dot.priority { background: #f1c40f; }
+
+  .grid { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; align-items: flex-start; }
+  .column { min-width: 180px; flex: 1; display: flex; flex-direction: column; }
+  .column.sortable-ghost { opacity: 0.35; }
+
+  .col-header { color: white; font-weight: bold; font-size: 13px; text-align: center; padding: 8px 8px 4px; border-radius: 6px 6px 0 0; display: flex; flex-direction: column; gap: 4px; cursor: grab; }
+  .col-header:active { cursor: grabbing; }
+  .col-header.procurement { background: #e85d26; }
+  .col-header.sales       { background: #2e9e4f; }
+  .col-header.inventory   { background: #e8a020; }
+  .col-header.support     { background: #2980c4; }
+  .col-header.projects    { background: #7b5ea7; }
+  .col-header.tools       { background: #cc2a2a; }
+
+  .drag-hint { font-size: 10px; opacity: 0.6; letter-spacing: 1px; margin-bottom: 2px; user-select: none; }
+  .col-title { background: transparent; border: none; outline: none; color: white; font-weight: bold; font-size: 13px; text-align: center; width: 100%; cursor: text; border-bottom: 1px dashed rgba(255,255,255,0.4); padding-bottom: 2px; }
+  .col-title:focus { border-bottom: 1px solid white; }
+  .col-suggestion { background: rgba(255,255,255,0.15); border: none; outline: none; color: #000; font-size: 13px; width: 100%; border-radius: 4px; padding: 4px 6px; resize: none; min-height: 38px; font-family: Arial, sans-serif; }
+  .col-suggestion::placeholder { color: rgba(0,0,0,0.45); font-style: italic; }
+  .col-suggestion:focus { background: rgba(255,255,255,0.25); outline: none; }
+
+  .item-list { background: #fff; border: 1px solid #ddd; border-top: none; border-radius: 0 0 6px 6px; padding: 6px; flex: 1; min-height: 40px; }
+  .item { background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 4px; padding: 6px 10px; margin-bottom: 4px; font-size: 13px; color: #333; cursor: grab; user-select: none; transition: background 0.15s, box-shadow 0.15s; }
+  .item:hover { filter: brightness(0.93); }
+  .item.sortable-ghost { opacity: 0.35; }
+  .item.sortable-chosen { cursor: grabbing; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  .item[data-color="unused"]   { background: #b94040; color: white; border-color: #a03535; }
+  .item[data-color="outdated"] { background: #7b5ea7; color: white; border-color: #6a4e96; }
+  .item[data-color="priority"] { background: #f1c40f; color: #333;  border-color: #d4ac0d; }
+
+  .saved-badge { position: fixed; bottom: 20px; right: 20px; background: #2e9e4f; color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .saved-badge.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>KMC Modules</h1>
+  <button class="topbar-btn" onclick="resetOrder()">↺ Reset to default</button>
+  <button class="topbar-btn screenshot-btn" onclick="openNameModal()">📷 Save Screenshot</button>
+</div>
+
+<div class="legend">
+  <strong style="font-size:13px;color:#555;">Legend:</strong>
+  <div class="legend-item"><div class="legend-swatch none"></div><span>Default</span></div>
+  <div class="legend-item"><div class="legend-swatch unused"></div><span>Not being used</span></div>
+  <div class="legend-item"><div class="legend-swatch outdated"></div><span>Not updated</span></div>
+  <div class="legend-item"><div class="legend-swatch priority"></div><span>Priority to update</span></div>
+  <span style="font-size:12px;color:#999;font-style:italic;">Right-click any item to tag it</span>
+</div>
+
+<div class="name-modal-overlay" id="nameModal">
+  <div class="name-modal">
+    <h2>Save Screenshot</h2>
+    <input type="text" id="nameInput" placeholder="Enter your name" />
+    <div class="name-modal-btns">
+      <button class="btn-cancel" onclick="closeNameModal()">Cancel</button>
+      <button class="btn-confirm" onclick="takeScreenshot()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="ctx-menu" id="ctxMenu">
+  <div class="ctx-menu-title">Tag item</div>
+  <div class="ctx-option" onclick="setColor('none')"><div class="ctx-dot none"></div> Default</div>
+  <div class="ctx-option" onclick="setColor('unused')"><div class="ctx-dot unused"></div> Not being used</div>
+  <div class="ctx-option" onclick="setColor('outdated')"><div class="ctx-dot outdated"></div> Not updated</div>
+  <div class="ctx-option" onclick="setColor('priority')"><div class="ctx-dot priority"></div> Priority to update</div>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="saved-badge" id="badge">✓ Saved</div>
+
+<script>
+const DEFAULT_KEYS = ["PROCUREMENT & TPMO","SALES","INVENTORY","SUPPORT","PROJECTS","TOOLS"];
+
+// color: none=default, unused=red, outdated=purple, priority=yellow
+const DEFAULT_DATA = {
+  "PROCUREMENT & TPMO": {
+    cls: "procurement",
+    items: [
+      ["BIO AC","none"],
+      ["Contacts","none"],
+      ["Invoices","unused"],
+      ["IT Services Charge","none"],
+      ["Leads","none"],
+      ["Organizations","none"],
+      ["Price Books","unused"],
+      ["Purchase Request","priority"],
+      ["Sales Orders","priority"],
+      ["Services","none"]
+    ]
+  },
+  "SALES": {
+    cls: "sales",
+    items: [
+      ["BCP Clients","none"],
+      ["CKT Escalation List","unused"],
+      ["Contacts","none"],
+      ["Organizations","priority"],
+      ["Products","none"],
+      ["Quotes","priority"],
+      ["Services","none"],
+      ["SMS Notifier","none"]
+    ]
+  },
+  "INVENTORY": {
+    cls: "inventory",
+    items: [
+      ["Assets","none"],
+      ["Asset Contact Name","unused"],
+      ["AssetDocuments","none"],
+      ["AssetMovementForm","none"],
+      ["AssetRepair","unused"],
+      ["BioDevices","unused"],
+      ["Cabling Tech Assets","unused"],
+      ["CKT Inventory","unused"],
+      ["Contacts","none"],
+      ["Company Entity Name","outdated"],
+      ["Customer Success Particulars","none"],
+      ["Customer Success Personnel","none"],
+      ["CustomerSuccessPermits","none"],
+      ["DID Inventory","unused"],
+      ["ExternalAssets","unused"],
+      ["Network Inventory","none"],
+      ["Non-IT Assets","none"],
+      ["Organizations","priority"],
+      ["PezaModule","none"],
+      ["Products","none"],
+      ["Product/Service Templates","unused"],
+      ["Server Inventory","none"],
+      ["Vendors","unused"]
+    ]
+  },
+  "SUPPORT": {
+    cls: "support",
+    items: [
+      ["OSP Dashboard","none"],
+      ["Contacts","none"],
+      ["Contact Emails","unused"],
+      ["HRTicketingSystem","none"],
+      ["NOC Maintenance","none"],
+      ["NOC Outage","none"],
+      ["Organizations","priority"],
+      ["PRDirectory","none"],
+      ["Service Contracts","unused"],
+      ["Service Requests","priority"],
+      ["SMSContacts","outdated"],
+      ["SMS Notifier","none"],
+      ["Solutions Support Portal","unused"]
+    ]
+  },
+  "PROJECTS": {
+    cls: "projects",
+    items: [
+      ["Contacts","none"],
+      ["Organizations","priority"],
+      ["Projects","priority"],
+      ["Project Milestones","unused"],
+      ["Project Tasks","none"]
+    ]
+  },
+  "TOOLS": {
+    cls: "tools",
+    items: [
+      ["AccessCloudControl","outdated"],
+      ["Account Managers","none"],
+      ["Bookmarks","none"],
+      ["BudgetingTool","priority"],
+      ["CanvassingTool","none"],
+      ["DigitalSignature","none"],
+      ["DigitalSignatureTemplate","none"],
+      ["Document Designer","none"],
+      ["Email Templates","unused"],
+      ["GatePassTemplate","none"],
+      ["GenConBiddingAuto...","none"],
+      ["HRTicketingSystemAdmin","none"],
+      ["MOP","none"],
+      ["NOC Notification","none"],
+      ["Our Sites","unused"],
+      ["OSP Version Control","unused"],
+      ["PortalAdmin","none"],
+      ["PowerBiDashboard","outdated"],
+      ["PingPhony","none"],
+      ["Product/Service Templates","none"],
+      ["PR-Reviewer","none"],
+      ["QrTemplate","none"],
+      ["Recycle Bin","unused"],
+      ["Reports & Dashboards","none"],
+      ["Sales Order Report","none"],
+      ["Site","priority"],
+      ["Summary Report","none"],
+      ["SupportPortalAdmin","none"],
+      ["TicketingAdmin","none"],
+      ["vtPrint Labels","none"],
+      ["WFH Tracker","none"]
+    ]
+  }
+};
+
+let ctxTarget = null;
+
+function showBadge() {
+  const badge = document.getElementById('badge');
+  badge.classList.add('show');
+  clearTimeout(badge._t);
+  badge._t = setTimeout(() => badge.classList.remove('show'), 1800);
+}
+
+function saveAll() {
+  const result = { items: {}, names: {}, suggestions: {}, colors: {}, columnOrder: [] };
+  document.querySelectorAll('.column').forEach(col => {
+    const key = col.dataset.key;
+    result.columnOrder.push(key);
+    result.names[key] = col.querySelector('.col-title').value;
+    result.suggestions[key] = col.querySelector('.col-suggestion').value;
+    result.items[key] = [];
+    result.colors[key] = [];
+    col.querySelectorAll('.item').forEach(el => {
+      result.items[key].push(el.textContent);
+      result.colors[key].push(el.dataset.color || 'none');
+    });
+  });
+  localStorage.setItem('kmc_modules_order', JSON.stringify(result));
+  showBadge();
+}
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem('kmc_modules_order');
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    if (p && !p.items) return null; // discard old incompatible format
+    return p;
+  } catch(e) { return null; }
+}
+
+function buildGrid() {
+  const saved = loadSaved();
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  const colOrder = (saved?.columnOrder?.length === DEFAULT_KEYS.length) ? saved.columnOrder : DEFAULT_KEYS;
+
+  colOrder.forEach(key => {
+    const meta = DEFAULT_DATA[key];
+    if (!meta) return;
+
+    // Use saved data if available, otherwise fall back to defaults
+    let itemNames, itemColors;
+    if (saved?.items?.[key]) {
+      itemNames  = saved.items[key];
+      itemColors = saved.colors?.[key] ?? itemNames.map(() => 'none');
+    } else {
+      itemNames  = meta.items.map(i => i[0]);
+      itemColors = meta.items.map(i => i[1]);
+    }
+
+    const customName = saved?.names?.[key] ?? key;
+    const sugg       = saved?.suggestions?.[key] ?? '';
+
+    const col = document.createElement('div');
+    col.className = 'column'; col.dataset.key = key;
+
+    const header = document.createElement('div');
+    header.className = `col-header ${meta.cls}`;
+
+    const hint = document.createElement('div');
+    hint.className = 'drag-hint'; hint.textContent = '⠿ drag to reorder';
+
+    const titleInput = document.createElement('input');
+    titleInput.className = 'col-title'; titleInput.type = 'text'; titleInput.value = customName;
+    titleInput.title = 'Click to rename';
+    titleInput.addEventListener('input', saveAll);
+    titleInput.addEventListener('mousedown', e => e.stopPropagation());
+
+    const suggBox = document.createElement('textarea');
+    suggBox.className = 'col-suggestion'; suggBox.placeholder = 'Suggested changes…';
+    suggBox.value = sugg; suggBox.rows = 2;
+    suggBox.addEventListener('input', saveAll);
+    suggBox.addEventListener('mousedown', e => e.stopPropagation());
+
+    header.append(hint, titleInput, suggBox);
+    col.appendChild(header);
+
+    const list = document.createElement('div');
+    list.className = 'item-list';
+    itemNames.forEach((name, i) => {
+      const div = document.createElement('div');
+      div.className = 'item'; div.textContent = name;
+      const c = itemColors[i] || 'none';
+      if (c && c !== 'none') div.dataset.color = c;
+      div.addEventListener('contextmenu', e => { e.preventDefault(); openCtxMenu(e, div); });
+      list.appendChild(div);
+    });
+    col.appendChild(list);
+    grid.appendChild(col);
+
+    Sortable.create(list, { group: 'modules', animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', onEnd() { saveAll(); } });
+  });
+
+  Sortable.create(grid, { animation: 200, handle: '.col-header', ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', onEnd() { saveAll(); } });
+}
+
+function openCtxMenu(e, el) {
+  ctxTarget = el;
+  const menu = document.getElementById('ctxMenu');
+  menu.classList.add('show');
+  let x = e.clientX, y = e.clientY;
+  if (x + 190 > window.innerWidth)  x = window.innerWidth - 195;
+  if (y + 160 > window.innerHeight) y = window.innerHeight - 165;
+  menu.style.left = x + 'px'; menu.style.top = y + 'px';
+}
+function closeCtxMenu() { document.getElementById('ctxMenu').classList.remove('show'); ctxTarget = null; }
+function setColor(color) {
+  if (!ctxTarget) return;
+  if (color === 'none') delete ctxTarget.dataset.color;
+  else ctxTarget.dataset.color = color;
+  closeCtxMenu(); saveAll();
+}
+document.addEventListener('click', e => { if (!e.target.closest('#ctxMenu')) closeCtxMenu(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeCtxMenu(); closeNameModal(); }
+  if (e.key === 'Enter' && document.getElementById('nameModal').classList.contains('show')) takeScreenshot();
+});
+
+function openNameModal() { document.getElementById('nameModal').classList.add('show'); setTimeout(() => document.getElementById('nameInput').focus(), 100); }
+function closeNameModal() { document.getElementById('nameModal').classList.remove('show'); }
+function takeScreenshot() {
+  const name = document.getElementById('nameInput').value.trim() || 'unknown';
+  closeNameModal();
+  const now = new Date(), pad = n => String(n).padStart(2,'0');
+  const filename = `KMC-Modules_${name}_${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.png`;
+  html2canvas(document.body, { scale: 1.5, useCORS: true }).then(canvas => {
+    const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = filename; a.click();
+  });
+}
+
+function resetOrder() {
+  if (!confirm('Reset all columns to their original order, names, and colors?')) return;
+  localStorage.removeItem('kmc_modules_order'); buildGrid();
+}
+
+buildGrid();
+</script>
+</body>
+</html>
