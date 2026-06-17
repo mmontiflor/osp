@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tech Store — System Overhaul Mockup</title>
+<style>
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f9fafb;
+  --color-border-tertiary: #e5e7eb;
+  --border-radius-lg: 10px;
+  --border-radius-md: 6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);font-size:15px;color:var(--color-text-primary);background:#f3f4f6;padding:10px;}
+h1.page-title{font-size:18px;font-weight:600;color:#1B2A4A;margin-bottom:3px;}
+.page-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;}
+.ts{font-size:15px;color:var(--color-text-primary);}
+.role-sw{display:flex;align-items:center;gap:8px;margin-bottom:6px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:5px 10px;font-size:13px;color:var(--color-text-secondary);flex-wrap:wrap;}
+.role-sw strong{color:var(--color-text-primary);margin-right:4px;}
+.rpill{padding:4px 12px;border-radius:20px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);cursor:pointer;font-size:13px;color:var(--color-text-secondary);font-family:var(--font-sans);}
+.rpill.on{background:#1B2A4A;color:#fff;border-color:#1B2A4A;}
+.mnav{display:flex;gap:3px;padding:4px;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);margin-bottom:8px;flex-wrap:wrap;}
+.mtab{padding:6px 13px;border-radius:6px;cursor:pointer;font-size:14px;border:0.5px solid transparent;background:transparent;color:var(--color-text-secondary);font-family:var(--font-sans);}
+.mtab.on{background:var(--color-background-primary);color:var(--color-text-primary);border-color:var(--color-border-tertiary);font-weight:500;}
+.screen{display:none;}.screen.on{display:block;}
+.shell{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary);}
+.hdr{background:#1B2A4A;padding:0 14px;height:48px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.logo{color:#fff;font-weight:600;font-size:16px;letter-spacing:.4px;white-space:nowrap;}
+.hnav{display:flex;gap:2px;flex-wrap:wrap;}
+.hna{color:rgba(255,255,255,.65);font-size:13px;text-decoration:none;padding:5px 10px;border-radius:5px;}
+.hna.on{color:#fff;background:rgba(255,255,255,.12);}
+.hright{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.newbtn{background:#E87722;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:var(--font-sans);}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;cursor:pointer;border:1.5px solid rgba(255,255,255,.4);flex-shrink:0;text-align:center;line-height:1;}
+.av-am{background:rgba(255,255,255,.2);}.av-client{background:#E87722;}
+.uname{font-size:13px;color:rgba(255,255,255,.8);white-space:nowrap;}
+.pbar{display:flex;align-items:center;padding:7px 14px;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);}
+.sn{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;}
+.sn.d{background:#E87722;color:#fff;}.sn.a{background:#1B2A4A;color:#fff;}.sn.t{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);}
+.sl{font-size:13px;color:var(--color-text-secondary);margin-left:5px;white-space:nowrap;}.sl.a{color:var(--color-text-primary);font-weight:500;}
+.sc-bar{height:1px;background:var(--color-border-tertiary);flex:1;margin:0 6px;min-width:8px;}.sc-bar.d{background:#E87722;}
+.cbanner{padding:6px 14px;display:flex;align-items:center;gap:7px;font-size:13px;flex-wrap:wrap;border-bottom:1.5px solid #E87722;}
+.cb-am{background:#FEF3E8;}.cb-client{background:#EAF4EA;border-bottom-color:#28A745;}
+.ctag{background:#1B2A4A;color:#fff;border-radius:4px;padding:2px 9px;font-size:13px;font-weight:500;}
+.ltag{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;padding:2px 8px;font-size:13px;color:var(--color-text-secondary);}
+.amtag{font-size:13px;color:#E87722;font-style:italic;}.cltag2{font-size:13px;color:#28A745;font-style:italic;}
+.body{padding:6px;background:var(--color-background-secondary);}
+.mg{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-bottom:6px;}
+.mcard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:8px 12px;}
+.ml{font-size:12px;color:var(--color-text-secondary);margin-bottom:2px;}.mv{font-size:22px;font-weight:600;line-height:1.1;}.ms{font-size:12px;color:var(--color-text-secondary);margin-top:1px;}
+.mv-n{color:var(--color-text-primary);}.mv-or{color:#E87722;}.mv-g{color:#28A745;}.mv-b{color:#0C5460;}
+.sp{display:inline-block;border-radius:10px;padding:3px 9px;font-size:12px;font-weight:500;white-space:nowrap;}
+.sp-ok{background:#D4EDDA;color:#155724;}.sp-pen{background:#FFF3CD;color:#856404;}.sp-sub{background:#D1ECF1;color:#0C5460;}.sp-ful{background:#E8D5F5;color:#5B2C8D;}.sp-rej{background:#F8D7DA;color:#721C24;}.sp-dft{background:#F0F0F0;color:#555;}.sp-ren{background:#D1ECF1;color:#0C5460;}
+.dlay{display:grid;grid-template-columns:1fr 210px;gap:5px;}
+.dpan{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:8px 10px;}
+.dpan h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--color-text-secondary);margin-bottom:6px;}
+.crow{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer;}
+.crow:last-child{border-bottom:none;}
+.cin{width:30px;height:30px;border-radius:6px;background:#1B2A4A;color:#fff;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cnm{font-size:13px;font-weight:500;}.cmeta{font-size:12px;color:var(--color-text-secondary);}
+.pitem{padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;}.pitem:last-child{border-bottom:none;}
+.pnum{color:#E87722;font-weight:600;font-size:13px;}.pcl{color:var(--color-text-secondary);font-size:12px;margin-top:1px;}.page{font-size:11px;margin-top:1px;}
+.page-w{color:#856404;}.page-r{color:#721C24;}.page-g{color:#155724;}.page-b{color:#0C5460;}
+.tracker{display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0;position:relative;}
+.tracker::before{content:'';position:absolute;top:20px;left:15px;right:15px;height:2px;background:var(--color-border-tertiary);z-index:0;}
+.tr-step{display:flex;flex-direction:column;align-items:center;gap:4px;z-index:1;flex:1;}
+.tr-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;border:2px solid var(--color-border-tertiary);}
+.tr-dot.done{background:#E87722;color:#fff;border-color:#E87722;}.tr-dot.active{background:#1B2A4A;color:#fff;border-color:#1B2A4A;}.tr-dot.todo{background:var(--color-background-primary);color:var(--color-text-secondary);}
+.tr-lbl{font-size:12px;color:var(--color-text-secondary);text-align:center;line-height:1.3;}
+.tr-lbl.done{color:#E87722;}.tr-lbl.active{color:var(--color-text-primary);font-weight:500;}
+.svc-table{width:100%;border-collapse:collapse;font-size:13px;}
+.svc-table th{padding:5px 8px;text-align:left;font-size:12px;font-weight:500;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);}
+.svc-table td{padding:6px 8px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:middle;}
+.svc-table tr:last-child td{border-bottom:none;}.svc-table tr:hover td{background:var(--color-background-secondary);}
+.ren-warn{color:#856404;font-size:12px;font-weight:500;}.ren-ok{color:var(--color-text-secondary);font-size:12px;}
+.secbox{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:9px 12px;margin-bottom:6px;}
+.secbox h3{font-size:14px;font-weight:500;margin-bottom:8px;}
+.for-g{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
+.forcard{background:var(--color-background-primary);border:1.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:8px 11px;cursor:pointer;display:flex;align-items:center;gap:8px;}
+.forcard:hover,.forcard.sel{border-color:#E87722;}.forcard.sel{background:#FEF3E8;}
+.forcard-title{font-size:13px;font-weight:500;margin-bottom:2px;}.forcard-sub{font-size:12px;color:var(--color-text-secondary);}
+.client-drop{width:100%;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:7px 10px;font-size:14px;color:var(--color-text-primary);background:var(--color-background-primary);font-family:var(--font-sans);margin-bottom:6px;}
+.lfields{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:6px;}
+.lf{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 9px;}
+.lf label{font-size:12px;color:var(--color-text-secondary);display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px;}
+.lf input{width:100%;border:none;background:transparent;font-size:14px;color:var(--color-text-primary);outline:none;font-family:var(--font-sans);}
+.type-g{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tcard{background:var(--color-background-primary);border:1.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;cursor:pointer;text-align:center;}
+.tcard:hover,.tcard.sel{border-color:#E87722;}
+.tcard-nm{font-size:15px;font-weight:500;margin-bottom:4px;}.tcard-desc{font-size:13px;color:var(--color-text-secondary);line-height:1.5;}
+.tcard-badge{display:inline-block;border-radius:10px;padding:3px 9px;font-size:12px;margin-top:5px;background:#E8D5F5;color:#5B2C8D;}
+.tcard.sel .tcard-badge{background:#E87722;color:#fff;}
+.ot-toggle{display:flex;background:var(--color-background-primary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);padding:3px;margin-bottom:8px;gap:3px;}
+.otp{flex:1;padding:6px;border-radius:5px;font-size:13px;border:none;background:transparent;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans);}
+.otp.on{background:#1B2A4A;color:#fff;}
+.cat-lay{display:grid;grid-template-columns:115px 1fr;gap:0;}
+.sidebar{border-right:0.5px solid var(--color-border-tertiary);padding:8px;background:var(--color-background-primary);}
+.sbh{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--color-text-secondary);margin-bottom:5px;}
+.sb-act{font-size:13px;color:#E87722;font-weight:500;border-left:2px solid #E87722;padding-left:5px;margin-bottom:2px;}
+.sb-it{font-size:12px;color:var(--color-text-secondary);padding:2px 0 2px 7px;cursor:pointer;}
+.pdiv{height:.5px;background:var(--color-border-tertiary);margin:5px 0;}
+.fg{margin-top:7px;}.flbl{font-size:13px;font-weight:500;display:block;margin-bottom:4px;color:var(--color-text-primary);}
+.fo{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--color-text-secondary);padding:2px 0;cursor:pointer;}
+.fo input{accent-color:#E87722;}
+.catcont{padding:6px;background:var(--color-background-secondary);}
+.srch{display:flex;align-items:center;gap:7px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 9px;margin-bottom:6px;}
+.srch input{border:none;background:transparent;font-size:13px;flex:1;outline:none;font-family:var(--font-sans);}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.pc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px;}
+.pc.incart{border:1.5px solid #E87722;}
+.pico{height:34px;display:flex;align-items:center;justify-content:center;background:var(--color-background-secondary);border-radius:4px;margin-bottom:5px;font-size:22px;}
+.pnm{font-size:13px;font-weight:500;margin-bottom:2px;line-height:1.3;}
+.sps{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:3px;}
+.stag{font-size:11px;background:var(--color-background-secondary);color:var(--color-text-secondary);border-radius:3px;padding:1px 5px;}
+.avb{font-size:11px;border-radius:10px;padding:2px 6px;font-weight:500;display:inline-block;margin-bottom:3px;}
+.av-i{background:#D4EDDA;color:#155724;}.av-l{background:#FFF3CD;color:#856404;}.av-m{background:#D1ECF1;color:#0C5460;}
+.ppr{font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;}.ppr strong{color:var(--color-text-primary);font-weight:500;}
+.llbl{font-size:10px;color:var(--color-text-secondary);margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px;}
+.lp{display:flex;gap:3px;margin-bottom:3px;flex-wrap:wrap;}
+.lpill{padding:2px 7px;border:0.5px solid var(--color-border-tertiary);border-radius:10px;font-size:12px;cursor:pointer;background:var(--color-background-secondary);color:var(--color-text-secondary);font-family:var(--font-sans);}
+.lpill.on{background:#1B2A4A;color:#fff;border-color:#1B2A4A;}.lpill.custom-pill.on{background:#E87722;border-color:#E87722;}
+.custom-term-row{display:flex;align-items:center;gap:4px;margin-bottom:4px;font-size:12px;color:var(--color-text-secondary);}
+.custom-term-row input{width:44px;border:0.5px solid var(--color-border-tertiary);border-radius:4px;padding:2px 5px;font-size:12px;text-align:center;background:var(--color-background-primary);font-family:var(--font-sans);}
+.qrow{display:flex;align-items:center;gap:3px;margin-bottom:4px;}
+.qbtn{width:20px;height:20px;border:0.5px solid var(--color-border-tertiary);border-radius:3px;background:var(--color-background-secondary);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-family:var(--font-sans);}
+.qinp{width:28px;text-align:center;border:0.5px solid var(--color-border-tertiary);border-radius:3px;padding:2px;font-size:12px;background:var(--color-background-primary);font-family:var(--font-sans);}
+.qlbl{font-size:12px;color:var(--color-text-secondary);}
+.addbtn{width:100%;padding:6px;background:#E87722;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);}
+.rmbtn{width:100%;padding:6px;background:#DC3545;color:#fff;border:none;border-radius:5px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);}
+.prform{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;}
+.prform h3{font-size:15px;font-weight:500;margin-bottom:9px;}
+.prg{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.prf label{display:block;font-size:13px;color:var(--color-text-secondary);margin-bottom:3px;}
+.prf input,.prf select,.prf textarea{width:100%;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 9px;font-size:14px;color:var(--color-text-primary);background:var(--color-background-primary);font-family:var(--font-sans);}
+.prf.full{grid-column:1/-1;}
+.urgrow{display:flex;gap:4px;flex-wrap:wrap;}
+.upgpill{padding:5px 11px;border:0.5px solid var(--color-border-tertiary);border-radius:10px;font-size:13px;cursor:pointer;background:var(--color-background-secondary);color:var(--color-text-secondary);font-family:var(--font-sans);}
+.upgpill.on{background:#E87722;color:#fff;border-color:#E87722;}
+.cartpan{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;margin-bottom:8px;}
+.cartpan h3{font-size:15px;font-weight:500;margin-bottom:9px;}
+.ci{display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);align-items:flex-start;}
+.ci:last-child{border-bottom:none;}
+.ci-ico{width:42px;height:42px;background:var(--color-background-secondary);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;}
+.ci-info{flex:1;}.ci-nm{font-size:14px;font-weight:500;margin-bottom:3px;}
+.badges{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;}
+.leasetag{background:#1B2A4A;color:#fff;border-radius:4px;padding:2px 8px;font-size:13px;}
+.tt-svc{background:#E8D5F5;color:#5B2C8D;border-radius:4px;padding:2px 8px;font-size:13px;}
+.tt-pur{background:#D1ECF1;color:#0C5460;border-radius:4px;padding:2px 8px;font-size:13px;}
+.ci-pr{font-size:13px;color:var(--color-text-secondary);display:flex;gap:10px;flex-wrap:wrap;}
+.ci-pr strong{color:var(--color-text-primary);}
+.ci-act{display:flex;align-items:center;gap:7px;margin-top:5px;}
+.alink{font-size:13px;color:var(--color-text-secondary);cursor:pointer;text-decoration:underline;}.alink.or{color:#E87722;}
+.totbar{display:flex;gap:14px;padding:9px 13px;background:#FEF3E8;border-radius:var(--border-radius-md);margin-bottom:8px;border:1px solid #FDDCB5;flex-wrap:wrap;}
+.tit{font-size:13px;color:var(--color-text-secondary);margin-bottom:2px;}.tval{font-size:15px;font-weight:500;color:var(--color-text-primary);}.tval.or{color:#E87722;font-size:18px;}
+.rdg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;}
+.rdf label{display:block;font-size:13px;color:var(--color-text-secondary);margin-bottom:2px;}
+.rdf input,.rdf select{width:100%;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 8px;font-size:13px;color:var(--color-text-primary);background:var(--color-background-primary);font-family:var(--font-sans);}
+.ro{background:var(--color-background-secondary)!important;color:var(--color-text-secondary)!important;}
+.termsrow{display:flex;align-items:flex-start;gap:7px;padding:9px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;border:0.5px solid var(--color-border-tertiary);}
+.termsrow input{accent-color:#E87722;margin-top:2px;flex-shrink:0;}
+.btnp{background:#E87722;color:#fff;border:none;border-radius:var(--border-radius-md);padding:8px 18px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-sans);}
+.btns{background:var(--color-background-primary);color:var(--color-text-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 18px;font-size:14px;cursor:pointer;font-family:var(--font-sans);}
+.ol-tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:8px;overflow-x:auto;}
+.oltab{padding:7px 12px;font-size:14px;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;color:var(--color-text-secondary);white-space:nowrap;font-family:var(--font-sans);}
+.oltab.on{color:#E87722;border-bottom-color:#E87722;font-weight:500;}
+.ocnt{display:inline-block;background:var(--color-background-secondary);color:var(--color-text-secondary);border-radius:10px;padding:1px 6px;font-size:12px;margin-left:2px;}
+.ocnt.hot{background:#E87722;color:#fff;}
+.filrow{display:flex;gap:6px;margin-bottom:7px;flex-wrap:wrap;}
+.filsel{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 9px;font-size:13px;color:var(--color-text-primary);background:var(--color-background-primary);font-family:var(--font-sans);}
+.olctl{display:flex;gap:7px;margin-bottom:7px;align-items:center;flex-wrap:wrap;}
+.olsr{display:flex;align-items:center;gap:6px;flex:1;min-width:160px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 10px;}
+.olsr input{border:none;background:transparent;font-size:14px;flex:1;outline:none;font-family:var(--font-sans);}
+.expbtn{display:flex;align-items:center;gap:4px;padding:6px 11px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-primary);font-size:13px;cursor:pointer;font-family:var(--font-sans);}
+.olt{width:100%;border-collapse:collapse;font-size:13px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;}
+.olt th{padding:7px 10px;text-align:left;font-size:12px;font-weight:600;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);white-space:nowrap;}
+.olt td{padding:7px 10px;border-bottom:0.5px solid var(--color-border-tertiary);vertical-align:middle;}
+.olt tr:last-child td{border-bottom:none;}.olt tr:hover td{background:var(--color-background-secondary);}
+.ql-link{color:#E87722;text-decoration:none;font-weight:600;}
+.tyb{display:inline-block;border-radius:4px;padding:2px 7px;font-size:12px;font-weight:500;}
+.tyb-s{background:#E8D5F5;color:#5B2C8D;}.tyb-p{background:#D1ECF1;color:#0C5460;}
+.age-ok{color:var(--color-text-secondary);}.age-w{color:#856404;font-weight:500;background:#FFF3CD;border-radius:3px;padding:1px 6px;}.age-r{color:#721C24;font-weight:500;background:#F8D7DA;border-radius:3px;padding:1px 6px;}
+.pagi{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:13px;color:var(--color-text-secondary);}
+.pgbtn{padding:4px 9px;border:0.5px solid var(--color-border-tertiary);border-radius:4px;background:var(--color-background-primary);cursor:pointer;font-family:var(--font-sans);font-size:13px;}
+.pgact{padding:4px 9px;background:var(--color-background-secondary);border-radius:4px;}
+.mover{min-height:180px;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;margin-top:10px;border-radius:0 0 var(--border-radius-lg) var(--border-radius-lg);}
+.mbox{background:var(--color-background-primary);border-radius:var(--border-radius-lg);padding:16px;width:320px;border:0.5px solid var(--color-border-tertiary);}
+.msum{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px;margin:10px 0;font-size:14px;}
+.msr{display:flex;justify-content:space-between;margin-bottom:5px;}
+</style>
+</head>
+<body>
+<div class="ts">
+<h1 class="page-title">Tech Store — System Overhaul Mockup</h1>
+<p class="page-sub">KMC Solutions · IT Procurement Portal · Concept design for client presentation</p>
+
+<div class="role-sw">
+  <strong>👁 Viewing as:</strong>
+  <button class="rpill on" id="r-am" onclick="setRole('am')">⚙ Internal employee (AM)</button>
+  <button class="rpill" id="r-client" onclick="setRole('client')">🏢 Client — Apex Zeta Inc.</button>
+  <span style="margin-left:auto;color:#9ca3af;font-size:10px;">System auto-detects based on login</span>
+</div>
+
+<div class="mnav">
+  <button class="mtab on" id="t0" onclick="sc(0)">① Dashboard</button>
+  <button class="mtab" id="t1" onclick="sc(1)">② New order</button>
+  <button class="mtab" id="t2" onclick="sc(2)">③ Catalog</button>
+  <button class="mtab" id="t3" onclick="sc(3)">④ Cart &amp; review</button>
+  <button class="mtab" id="t4" onclick="sc(4)">⑤ Orders</button>
+</div>
+
+<!-- ① DASHBOARD -->
+<div class="screen on" id="s0"><div class="shell">
+  <div class="hdr">
+    <span class="logo">TECH STORE</span>
+    <div class="hnav" id="nav0-am"><a href="#" class="hna on">Dashboard</a><a href="#" class="hna" onclick="sc(4);return false;">Orders</a><a href="#" class="hna">Clients</a><a href="#" class="hna">Reports</a></div>
+    <div class="hnav" id="nav0-cl" style="display:none;"><a href="#" class="hna on">My dashboard</a><a href="#" class="hna" onclick="sc(4);return false;">My orders</a><a href="#" class="hna">My account</a></div>
+    <div class="hright"><button class="newbtn" onclick="sc(1)">+ New order</button><span class="uname" id="uname0">AM: Majo M.</span><div class="avatar av-am" id="av0">MM</div></div>
+  </div>
+  <div id="dash-am"><div class="body">
+    <div class="mg">
+      <div class="mcard"><div class="ml">Active services (all clients)</div><div class="mv mv-n">142</div><div class="ms">Across 12 clients · 4 locations</div></div>
+      <div class="mcard"><div class="ml">Pending approvals</div><div class="mv mv-or">28</div><div class="ms">6 overdue — action needed</div></div>
+      <div class="mcard"><div class="ml">Open purchase requests</div><div class="mv mv-n">9</div><div class="ms">3 awaiting sourcing / quote</div></div>
+      <div class="mcard"><div class="ml">Managed clients</div><div class="mv mv-n">12</div><div class="ms">BGC · Glorietta · Offsite</div></div>
+    </div>
+    <div class="dlay">
+      <div class="dpan"><h3>My clients</h3>
+        <div class="crow"><div class="cin">AZ</div><div style="flex:1;"><div class="cnm">Apex Zeta Inc.</div><div class="cmeta">BGC Tower 2, 20F · 34 services</div></div><span class="sp sp-pen">2 pending</span></div>
+        <div class="crow"><div class="cin">OS</div><div style="flex:1;"><div class="cnm">Ourspace Solutions Inc.</div><div class="cmeta">Glorietta 2, 11F · 18 services</div></div><span class="sp sp-ok">Up to date</span></div>
+        <div class="crow"><div class="cin">KC</div><div style="flex:1;"><div class="cnm">KMC Community Inc.</div><div class="cmeta">BGC Tower 1, 14F · 41 services</div></div><span class="sp sp-pen">1 pending</span></div>
+        <div class="crow"><div class="cin">AT</div><div style="flex:1;"><div class="cnm">Apex Two Inc.</div><div class="cmeta">Glorietta 2, 11F · 12 services</div></div><span class="sp sp-ful">In fulfillment</span></div>
+        <div class="crow"><div class="cin">ZI</div><div style="flex:1;"><div class="cnm">Zucora Inc.</div><div class="cmeta">Offsite · 8 services</div></div><span class="sp sp-ok">Up to date</span></div>
+      </div>
+      <div class="dpan"><h3>Needs action</h3>
+        <div class="pitem"><div class="pnum">TPMO-74986</div><div class="pcl">KMC Community — Monitor req.</div><div class="page page-w">⚠ Waiting 3 days</div></div>
+        <div class="pitem"><div class="pnum">TPMO-74821</div><div class="pcl">Vertex Corp — Desktop bundle</div><div class="page page-r">⚠ Overdue — 6 days</div></div>
+        <div class="pitem"><div class="pnum">TPMO-74810</div><div class="pcl">Sumisho Corp — Laptop</div><div class="page page-r">⚠ Overdue — 7 days</div></div>
+        <div class="pitem"><div class="pnum">PR-2026-041</div><div class="pcl">Apex Zeta — Custom AV setup</div><div class="page page-b">Purchase req. — awaiting quote</div></div>
+        <div style="margin-top:10px;"><button class="btnp" style="width:100%;font-size:11px;" onclick="sc(4)">View all orders →</button></div>
+      </div>
+    </div>
+  </div></div>
+  <div id="dash-client" style="display:none;"><div class="body">
+    <div class="mg">
+      <div class="mcard"><div class="ml">Active leased services</div><div class="mv mv-g">34</div><div class="ms">BGC Tower 2, 20F</div></div>
+      <div class="mcard"><div class="ml">Orders in progress</div><div class="mv mv-or">2</div><div class="ms">1 pending approval · 1 in fulfillment</div></div>
+      <div class="mcard"><div class="ml">Upcoming renewals</div><div class="mv mv-b">5</div><div class="ms">Next 30 days — action may be needed</div></div>
+      <div class="mcard"><div class="ml">Open purchase requests</div><div class="mv mv-n">1</div><div class="ms">Awaiting quote from KMC IT</div></div>
+    </div>
+    <div class="dpan" style="margin-bottom:8px;"><h3>Latest order — TPMO-74991 · Monitor set × 2</h3>
+      <div class="tracker">
+        <div class="tr-step"><div class="tr-dot done">✓</div><div class="tr-lbl done">Submitted</div></div>
+        <div class="tr-step"><div class="tr-dot done">✓</div><div class="tr-lbl done">Approved</div></div>
+        <div class="tr-step"><div class="tr-dot active">3</div><div class="tr-lbl active">In fulfillment</div></div>
+        <div class="tr-step"><div class="tr-dot todo">4</div><div class="tr-lbl">Delivered</div></div>
+        <div class="tr-step"><div class="tr-dot todo">5</div><div class="tr-lbl">Active / billed</div></div>
+      </div>
+      <p style="font-size:11px;color:#6b7280;margin-top:4px;">Est. delivery: <strong>Jul 3, 2026</strong> · 6-month lease · MRC ₱2,000/mo · <a href="#" class="alink or" onclick="sc(4);return false;">View full order</a></p>
+    </div>
+    <div class="dlay">
+      <div class="dpan"><h3>My active services</h3>
+        <table class="svc-table">
+          <thead><tr><th>Service</th><th>Qty</th><th>Lease</th><th>Expires</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Monitor set 22"</td><td>5</td><td>6-mo</td><td><span class="ren-warn">⚠ Jul 31, 2026</span></td><td><span class="sp sp-ok" style="font-size:10px;">Active</span></td></tr>
+            <tr><td>i5 8GB Desktop</td><td>10</td><td>12-mo</td><td><span class="ren-ok">Jan 2027</span></td><td><span class="sp sp-ok" style="font-size:10px;">Active</span></td></tr>
+            <tr><td>i5 8GB Laptop</td><td>4</td><td>12-mo</td><td><span class="ren-ok">Mar 2027</span></td><td><span class="sp sp-ok" style="font-size:10px;">Active</span></td></tr>
+            <tr><td>IP Phone (Yealink)</td><td>8</td><td>12-mo</td><td><span class="ren-ok">Dec 2026</span></td><td><span class="sp sp-ok" style="font-size:10px;">Active</span></td></tr>
+            <tr><td>Network switch</td><td>2</td><td>12-mo</td><td><span class="ren-warn">⚠ Aug 15, 2026</span></td><td><span class="sp sp-ren" style="font-size:10px;">Renewal due</span></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:8px;font-size:11px;color:#6b7280;">⚠ 2 services renewing within 30 days — <a href="#" class="alink or">renew now</a></div>
+      </div>
+      <div class="dpan"><h3>Recent orders</h3>
+        <div class="pitem"><div class="pnum">TPMO-74991</div><div class="pcl">Monitor set × 2</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><span class="sp sp-ful" style="font-size:10px;">In fulfillment</span><span class="page page-b">Est. Jul 3</span></div></div>
+        <div class="pitem"><div class="pnum">PR-2026-041</div><div class="pcl">Custom AV setup</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><span class="sp sp-pen" style="font-size:10px;">Awaiting quote</span><span class="page page-b">Jun 15</span></div></div>
+        <div class="pitem"><div class="pnum">TPMO-74820</div><div class="pcl">i5 Desktop × 3</div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px;"><span class="sp sp-ok" style="font-size:10px;">Active</span><span class="page page-g">Delivered May 10</span></div></div>
+        <div style="margin-top:10px;"><button class="btnp" style="width:100%;font-size:11px;" onclick="sc(4)">All my orders →</button></div>
+      </div>
+    </div>
+  </div></div>
+</div></div>
+
+<!-- ② NEW ORDER -->
+<div class="screen" id="s1"><div class="shell">
+  <div class="hdr"><span class="logo">TECH STORE</span><div class="hnav"><a href="#" class="hna on">New order</a></div><div class="hright"><span class="uname" id="uname1">AM: Majo M.</span><div class="avatar av-am" id="av1">MM</div></div></div>
+  <div class="pbar"><div class="sn a">1</div><span class="sl a">Order context</span><div class="sc-bar"></div><div class="sn t">2</div><span class="sl">Select items</span><div class="sc-bar"></div><div class="sn t">3</div><span class="sl">Review &amp; terms</span><div class="sc-bar"></div><div class="sn t">4</div><span class="sl">Submit</span></div>
+  <div class="body">
+    <div class="secbox" id="who-section"><h3 id="who-title">Who is placing this order?</h3>
+      <div class="for-g" id="for-cards">
+        <div class="forcard" id="fc-self" onclick="setFor('self')"><span style="font-size:22px;">🏢</span><div><div class="forcard-title">I am the client</div><div class="forcard-sub">Ordering for my own company</div></div></div>
+        <div class="forcard sel" id="fc-behalf" onclick="setFor('behalf')"><span style="font-size:22px;">👤</span><div><div class="forcard-title">Account manager — on behalf of a client</div><div class="forcard-sub">I am an AM placing this order for a client</div></div></div>
+      </div>
+      <div id="client-sel-wrap">
+        <label style="font-size:11px;color:#6b7280;display:block;margin-bottom:4px;">Select client *</label>
+        <select class="client-drop" id="client-select" onchange="updateLoc(this)">
+          <option value="az" selected>Apex Zeta Inc. — BGC Tower 2, 20F</option>
+          <option value="os">Ourspace Solutions Inc. — Glorietta 2, 11F</option>
+          <option value="kc">KMC Community Inc. — BGC Tower 1, 14F</option>
+          <option value="at">Apex Two Inc. — Glorietta 2, 11F</option>
+          <option value="zi">Zucora Inc. — Offsite</option>
+        </select>
+        <div class="lfields">
+          <div class="lf"><label>Building / location</label><input id="loc-bldg" value="BGC Tower 2" readonly/></div>
+          <div class="lf"><label>Floor</label><input id="loc-floor" value="20F" readonly/></div>
+          <div class="lf"><label>Suite / seat (optional)</label><input placeholder="e.g. Suite 2001"/></div>
+          <div class="lf"><label>On-site contact *</label><input placeholder="Recipient name"/></div>
+        </div>
+      </div>
+      <div id="self-wrap" style="display:none;">
+        <div class="lfields">
+          <div class="lf"><label>Your company</label><input value="Apex Zeta Inc." readonly/></div>
+          <div class="lf"><label>Location</label><input value="BGC Tower 2, 20F" readonly/></div>
+          <div class="lf"><label>Suite / seat (optional)</label><input placeholder="e.g. Suite 2001"/></div>
+          <div class="lf"><label>Your name *</label><input placeholder="Your full name"/></div>
+        </div>
+      </div>
+    </div>
+    <div class="secbox"><h3>What type of order is this?</h3>
+      <div class="type-g">
+        <div class="tcard sel" id="tc-svc" onclick="setType('svc')"><div style="font-size:36px;margin-bottom:8px;">🖥️</div><div class="tcard-nm">Service / lease</div><div class="tcard-desc">Choose from our managed IT service catalog. Flexible lease terms, 1-month minimum.</div><span class="tcard-badge">Catalog order</span></div>
+        <div class="tcard" id="tc-pur" onclick="setType('pur')"><div style="font-size:36px;margin-bottom:8px;">📋</div><div class="tcard-nm">Purchase request</div><div class="tcard-desc">Request items not in the catalog, or items you need to own rather than lease.</div><span class="tcard-badge" style="background:#D1ECF1;color:#0C5460;">Custom request</span></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;"><button class="btns" onclick="sc(0)">Cancel</button><button class="btnp" onclick="sc(2)">Continue →</button></div>
+  </div>
+</div></div>
+
+<!-- ③ CATALOG -->
+<div class="screen" id="s2"><div class="shell">
+  <div class="hdr"><span class="logo">TECH STORE</span><div class="hnav"><a href="#" class="hna on">New order</a></div><div class="hright"><span class="uname" id="uname2">AM: Majo M.</span><div class="avatar av-am" id="av2">MM</div></div></div>
+  <div class="pbar"><div class="sn d">✓</div><span class="sl">Order context</span><div class="sc-bar d"></div><div class="sn a">2</div><span class="sl a">Select items</span><div class="sc-bar"></div><div class="sn t">3</div><span class="sl">Review &amp; terms</span><div class="sc-bar"></div><div class="sn t">4</div><span class="sl">Submit</span></div>
+  <div class="cbanner cb-am" id="s2-banner"><span>🏢</span><span>Ordering for:</span><span class="ctag" id="s2-ctag">Apex Zeta Inc.</span><span class="ltag" id="s2-ltag">📍 BGC Tower 2, 20F</span><span class="amtag" id="s2-via">via Majo Montiflor (AM)</span></div>
+  <div style="padding:10px 10px 0;background:#f9fafb;">
+    <div class="ot-toggle"><button class="otp on" id="ot-svc" onclick="setView('svc')">🖥️ Service / lease catalog</button><button class="otp" id="ot-pur" onclick="setView('pur')">📋 Purchase request</button></div>
+  </div>
+  <div id="catalog-view"><div class="cat-lay">
+    <div class="sidebar">
+      <div class="sbh">Categories</div><div class="sb-act">Desktop &amp; Laptop</div><div class="sb-it">Voice &amp; Comms</div><div class="sb-it">Network</div><div class="sb-it">VM Hosting</div><div class="sb-it">Security</div><div class="sb-it">Others</div>
+      <div class="pdiv"></div>
+      <div class="fg"><span class="flbl">Availability</span><label class="fo"><input type="checkbox" checked/> In stock</label><label class="fo"><input type="checkbox" checked/> Low stock</label><label class="fo"><input type="checkbox"/> Made to order</label></div>
+      <div class="fg"><span class="flbl">Price / mo</span><label class="fo"><input type="checkbox"/> &lt; ₱3K</label><label class="fo"><input type="checkbox" checked/> ₱3K–₱5K</label><label class="fo"><input type="checkbox"/> &gt; ₱5K</label></div>
+    </div>
+    <div class="catcont">
+      <div class="srch"><span style="color:#9ca3af;">🔍</span><input placeholder="Search products, specs, model numbers…"/></div>
+      <div class="pg">
+        <div class="pc incart">
+          <div class="pico">🖥️</div><div class="pnm">Single Monitor Set — 22" with KB &amp; Mouse</div>
+          <div class="sps"><span class="stag">22" display</span><span class="stag">KB + Mouse incl.</span></div>
+          <span class="avb av-i">In stock</span>
+          <div class="ppr">From <strong>₱1,000</strong>/mo · OTSF ₱0</div>
+          <div class="llbl">Lease term (min. 1 month)</div>
+          <div class="lp"><button class="lpill" onclick="pickTerm(this,'ct1')">1M</button><button class="lpill" onclick="pickTerm(this,'ct1')">3M</button><button class="lpill on" onclick="pickTerm(this,'ct1')">6M</button><button class="lpill" onclick="pickTerm(this,'ct1')">12M</button><button class="lpill custom-pill" onclick="pickCustom(this,'ct1')">Custom</button></div>
+          <div class="custom-term-row" id="ct1" style="display:none;"><input type="number" min="1" value="6"/> months <span style="font-size:10px;color:#E87722;">(min. 1)</span></div>
+          <div class="qrow"><span class="qlbl">Qty:</span><button class="qbtn">−</button><input class="qinp" type="number" value="2" min="1"/><button class="qbtn">+</button></div>
+          <button class="rmbtn">🗑 Remove from order</button>
+        </div>
+        <div class="pc">
+          <div class="pico">🖥️</div><div class="pnm">i5 8GB Desktop — Dual Monitor Setup</div>
+          <div class="sps"><span class="stag">Intel i5</span><span class="stag">8 GB RAM</span><span class="stag">Dual 22"</span></div>
+          <span class="avb av-l">Low stock</span>
+          <div class="ppr">From <strong>₱4,000</strong>/mo · OTSF ₱500</div>
+          <div class="llbl">Lease term (min. 1 month)</div>
+          <div class="lp"><button class="lpill" onclick="pickTerm(this,'ct2')">1M</button><button class="lpill" onclick="pickTerm(this,'ct2')">3M</button><button class="lpill" onclick="pickTerm(this,'ct2')">6M</button><button class="lpill on" onclick="pickTerm(this,'ct2')">12M</button><button class="lpill custom-pill" onclick="pickCustom(this,'ct2')">Custom</button></div>
+          <div class="custom-term-row" id="ct2" style="display:none;"><input type="number" min="1" value="12"/> months <span style="font-size:10px;color:#E87722;">(min. 1)</span></div>
+          <div class="qrow"><span class="qlbl">Qty:</span><button class="qbtn">−</button><input class="qinp" type="number" value="1" min="1"/><button class="qbtn">+</button></div>
+          <button class="addbtn">Add to order</button>
+        </div>
+        <div class="pc">
+          <div class="pico">💻</div><div class="pnm">i5 8GB Laptop — 14" Business</div>
+          <div class="sps"><span class="stag">Intel i5</span><span class="stag">8 GB RAM</span><span class="stag">14" FHD</span></div>
+          <span class="avb av-m">Made to order</span>
+          <div class="ppr">From <strong>₱3,500</strong>/mo · OTSF ₱0</div>
+          <div class="llbl">Lease term (min. 1 month)</div>
+          <div class="lp"><button class="lpill" onclick="pickTerm(this,'ct3')">1M</button><button class="lpill" onclick="pickTerm(this,'ct3')">3M</button><button class="lpill" onclick="pickTerm(this,'ct3')">6M</button><button class="lpill on" onclick="pickTerm(this,'ct3')">12M</button><button class="lpill custom-pill" onclick="pickCustom(this,'ct3')">Custom</button></div>
+          <div class="custom-term-row" id="ct3" style="display:none;"><input type="number" min="1" value="12"/> months <span style="font-size:10px;color:#E87722;">(min. 1)</span></div>
+          <div class="qrow"><span class="qlbl">Qty:</span><button class="qbtn">−</button><input class="qinp" type="number" value="1" min="1"/><button class="qbtn">+</button></div>
+          <button class="addbtn">Add to order</button>
+        </div>
+        <div class="pc">
+          <div class="pico">🖥️</div><div class="pnm">i7 16GB Desktop — Dual Monitor</div>
+          <div class="sps"><span class="stag">Intel i7</span><span class="stag">16 GB RAM</span><span class="stag">Dual 24"</span></div>
+          <span class="avb av-i">In stock</span>
+          <div class="ppr">From <strong>₱5,500</strong>/mo · OTSF ₱500</div>
+          <div class="llbl">Lease term (min. 1 month)</div>
+          <div class="lp"><button class="lpill" onclick="pickTerm(this,'ct4')">1M</button><button class="lpill on" onclick="pickTerm(this,'ct4')">3M</button><button class="lpill" onclick="pickTerm(this,'ct4')">6M</button><button class="lpill" onclick="pickTerm(this,'ct4')">12M</button><button class="lpill custom-pill" onclick="pickCustom(this,'ct4')">Custom</button></div>
+          <div class="custom-term-row" id="ct4" style="display:none;"><input type="number" min="1" value="3"/> months <span style="font-size:10px;color:#E87722;">(min. 1)</span></div>
+          <div class="qrow"><span class="qlbl">Qty:</span><button class="qbtn">−</button><input class="qinp" type="number" value="1" min="1"/><button class="qbtn">+</button></div>
+          <button class="addbtn">Add to order</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><span style="font-size:11px;color:#6b7280;">1 item in order</span><button class="btnp" onclick="sc(3)">Review order →</button></div>
+    </div>
+  </div></div>
+  <div id="purchase-view" style="display:none;padding:10px;background:#f9fafb;">
+    <div class="prform"><h3 id="pr-title">Purchase request — Apex Zeta Inc.</h3>
+      <div class="prg">
+        <div class="prf"><label>Category *</label><select><option>Desktop &amp; Laptop</option><option>Voice &amp; Comms</option><option>Network</option><option>Furniture</option><option>Other</option></select></div>
+        <div class="prf"><label>Brand (optional)</label><input placeholder="e.g. Dell, HP, Any"/></div>
+        <div class="prf"><label>Quantity *</label><input type="number" value="1" min="1"/></div>
+        <div class="prf"><label>Est. budget</label><select><option>Select range</option><option>Under ₱5,000</option><option>₱5K–₱20K</option><option>₱20K–₱50K</option><option>Above ₱50K</option></select></div>
+        <div class="prf full"><label>Specifications / description *</label><textarea rows="3" placeholder="Describe the item in detail…"></textarea></div>
+        <div class="prf"><label>Urgency *</label><div class="urgrow"><button class="upgpill on">Normal</button><button class="upgpill">Urgent</button><button class="upgpill">Emergency</button></div></div>
+        <div class="prf full"><label>Reason / justification *</label><input placeholder="e.g. New hire onboarding — replacing failed unit"/></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;"><button class="btns">Save as draft</button><button class="btnp" onclick="sc(3)">Continue →</button></div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ④ CART & REVIEW -->
+<div class="screen" id="s3"><div class="shell">
+  <div class="hdr"><span class="logo">TECH STORE</span><div class="hnav"><a href="#" class="hna on">New order</a></div><div class="hright"><span class="uname" id="uname3">AM: Majo M.</span><div class="avatar av-am" id="av3">MM</div></div></div>
+  <div class="pbar"><div class="sn d">✓</div><span class="sl">Order context</span><div class="sc-bar d"></div><div class="sn d">✓</div><span class="sl">Select items</span><div class="sc-bar d"></div><div class="sn a">3</div><span class="sl a">Review &amp; terms</span><div class="sc-bar"></div><div class="sn t">4</div><span class="sl">Submit</span></div>
+  <div class="cbanner cb-am" id="s3-banner"><span>🏢</span><span>Ordering for:</span><span class="ctag" id="s3-ctag">Apex Zeta Inc.</span><span class="ltag" id="s3-ltag">📍 BGC Tower 2, 20F</span><span id="s3-via" class="amtag">via Majo Montiflor (AM)</span></div>
+  <div class="body">
+    <div class="cartpan"><h3>Request details</h3>
+      <div class="rdg">
+        <div class="rdf" id="rd-am-row"><label>Requested by (Account Manager)</label><input class="ro" value="Majo Montiflor" readonly/></div>
+        <div class="rdf"><label id="rd-client-lbl">Client account</label><input class="ro" id="rd-client-val" value="Apex Zeta Inc." readonly/></div>
+        <div class="rdf"><label>Delivery location</label><input class="ro" value="BGC Tower 2, 20F" readonly/></div>
+        <div class="rdf"><label>Suite / seat *</label><input placeholder="e.g. Suite 2001"/></div>
+        <div class="rdf"><label id="rd-contact-lbl">On-site contact *</label><input placeholder="Recipient name"/></div>
+        <div class="rdf"><label>Target delivery date *</label><input type="date" value="2026-07-15"/></div>
+        <div class="rdf"><label>Cost center / PO ref.</label><input placeholder="e.g. CC-0042"/></div>
+        <div class="rdf"><label id="rd-notif-lbl">Client notification email</label><input type="email" placeholder="client@company.com"/></div>
+      </div>
+    </div>
+    <div class="cartpan"><h3>Order items</h3>
+      <div class="ci"><div class="ci-ico">🖥️</div><div class="ci-info"><div class="ci-nm">Single Monitor Set — 22" with Keyboard &amp; Mouse</div><div class="badges"><span class="leasetag">6-month lease · starts Jul 1, 2026</span><span class="tt-svc">Service / lease</span></div><div class="ci-pr"><span>MRC: <strong>₱1,000</strong></span><span>OTSF: <strong>₱0</strong></span><span>Qty: <strong>2</strong></span><span>Subtotal: <strong>₱2,000/mo</strong></span></div><div class="ci-act"><button class="qbtn">−</button><input class="qinp" type="number" value="2" style="width:30px;"/><button class="qbtn">+</button><span class="alink">Remove</span><span class="alink or">Change term</span></div></div></div>
+      <div class="ci"><div class="ci-ico">💻</div><div class="ci-info"><div class="ci-nm">i5 8GB Laptop — 14" Business</div><div class="badges"><span class="leasetag">12-month lease · starts Jul 1, 2026</span><span class="tt-svc">Service / lease</span></div><div class="ci-pr"><span>MRC: <strong>₱3,500</strong></span><span>OTSF: <strong>₱0</strong></span><span>Qty: <strong>1</strong></span><span>Subtotal: <strong>₱3,500/mo</strong></span></div><div class="ci-act"><button class="qbtn">−</button><input class="qinp" type="number" value="1" style="width:30px;"/><button class="qbtn">+</button><span class="alink">Remove</span><span class="alink or">Change term</span></div></div></div>
+      <div class="ci"><div class="ci-ico">📋</div><div class="ci-info"><div class="ci-nm">Standing desk — adjustable height</div><div class="badges"><span class="tt-pur">Purchase request</span></div><div class="ci-pr"><span>Est. budget: <strong>₱20K–₱50K</strong></span><span>Qty: <strong>2</strong></span></div><div class="ci-act"><span class="alink">Remove</span><span class="alink or">Edit specs</span></div></div></div>
+    </div>
+    <div class="totbar">
+      <div><div class="tit">One-time (OTSF)</div><div class="tval">₱0.00</div></div>
+      <div><div class="tit">Monthly (MRC)</div><div class="tval">₱5,500 / mo</div></div>
+      <div><div class="tit">Purchase requests</div><div class="tval">1 item (pending quote)</div></div>
+      <div style="margin-left:auto;text-align:right;"><div class="tit">Total to confirm</div><div class="tval or">₱5,500 / mo</div></div>
+    </div>
+    <div class="cartpan"><h3>Notes</h3><textarea rows="2" placeholder="Special instructions, delivery notes…" style="width:100%;border:0.5px solid #e5e7eb;border-radius:6px;padding:7px;font-size:12px;resize:vertical;color:#111827;background:#fff;font-family:var(--font-sans);"></textarea></div>
+    <div class="termsrow"><input type="checkbox" checked/><label id="terms-text">I confirm that the client <strong>Apex Zeta Inc.</strong> has agreed to the lease terms. Lease periods begin from the confirmed delivery date. Minimum lease term is <strong>1 month</strong>. Early termination may be subject to charges per the service agreement.</label></div>
+    <div style="display:flex;gap:8px;justify-content:space-between;"><button class="btns" onclick="sc(2)">← Back</button><div style="display:flex;gap:8px;"><button class="btns">Save as draft</button><button class="btnp" onclick="showModal(true)">Submit order →</button></div></div>
+    <div id="modal" style="display:none;"><div class="mover"><div class="mbox">
+      <h3 style="font-size:14px;font-weight:500;margin-bottom:4px;">Confirm order submission</h3>
+      <p style="font-size:11px;color:#6b7280;margin-bottom:10px;">Order will be sent for IT approval and the relevant party notified.</p>
+      <div class="msum">
+        <div class="msr"><span style="color:#6b7280;" id="modal-who-lbl">Client</span><strong id="modal-who-val">Apex Zeta Inc.</strong></div>
+        <div class="msr"><span style="color:#6b7280;">Location</span><strong>BGC Tower 2, 20F</strong></div>
+        <div class="msr"><span style="color:#6b7280;">Lease items</span><strong>2</strong></div>
+        <div class="msr"><span style="color:#6b7280;">Purchase requests</span><strong>1</strong></div>
+        <div style="height:.5px;background:#e5e7eb;margin:7px 0;"></div>
+        <div class="msr"><span style="color:#6b7280;">MRC</span><strong style="color:#E87722;">₱5,500 / mo</strong></div>
+        <div class="msr"><span style="color:#6b7280;" id="modal-by-lbl">Ordered by (AM)</span><strong id="modal-by-val">Majo Montiflor</strong></div>
+      </div>
+      <div style="display:flex;gap:7px;justify-content:flex-end;"><button class="btns" onclick="showModal(false)">Go back</button><button class="btnp" onclick="showModal(false)">Confirm &amp; submit</button></div>
+    </div></div></div>
+  </div>
+</div></div>
+
+<!-- ⑤ ORDERS -->
+<div class="screen" id="s4"><div class="shell">
+  <div class="hdr">
+    <span class="logo">TECH STORE</span>
+    <div class="hnav" id="nav4-am"><a href="#" class="hna" onclick="sc(0);return false;">Dashboard</a><a href="#" class="hna on">Orders</a><a href="#" class="hna">Clients</a></div>
+    <div class="hnav" id="nav4-cl" style="display:none;"><a href="#" class="hna" onclick="sc(0);return false;">My dashboard</a><a href="#" class="hna on">My orders</a><a href="#" class="hna">My account</a></div>
+    <div class="hright"><button class="newbtn" onclick="sc(1)">+ New order</button><span class="uname" id="uname4">AM: Majo M.</span><div class="avatar av-am" id="av4">MM</div></div>
+  </div>
+  <div class="body">
+    <div id="tabs-am">
+      <div class="ol-tabs"><button class="oltab on">All <span class="ocnt">356</span></button><button class="oltab">My orders <span class="ocnt">44</span></button><button class="oltab">Pending approval <span class="ocnt hot">28</span></button><button class="oltab">Active services <span class="ocnt">142</span></button><button class="oltab">Purchase requests <span class="ocnt">9</span></button><button class="oltab">Overdue <span class="ocnt hot">6</span></button></div>
+      <div class="filrow"><select class="filsel"><option>All clients</option><option>Apex Zeta Inc.</option><option>Ourspace Solutions</option><option>KMC Community</option></select><select class="filsel"><option>All locations</option><option>BGC Tower 1</option><option>BGC Tower 2</option><option>Glorietta 2</option><option>Offsite</option></select><select class="filsel"><option>All types</option><option>Service / lease</option><option>Purchase request</option></select><select class="filsel"><option>All requestors</option><option>Client self-service</option><option>Via AM</option></select></div>
+    </div>
+    <div id="tabs-cl" style="display:none;">
+      <div class="ol-tabs"><button class="oltab on">All my orders <span class="ocnt">18</span></button><button class="oltab">In progress <span class="ocnt hot">2</span></button><button class="oltab">Active services <span class="ocnt">34</span></button><button class="oltab">Purchase requests <span class="ocnt">1</span></button><button class="oltab">Upcoming renewals <span class="ocnt hot">5</span></button></div>
+    </div>
+    <div class="olctl"><div class="olsr"><span style="color:#9ca3af;">🔍</span><input placeholder="Search quote number, product, status…"/></div><button class="expbtn">⬇ Export</button></div>
+    <div id="tbl-am">
+      <p style="font-size:11px;color:#6b7280;margin-bottom:7px;">Showing 1–6 of 356</p>
+      <div style="overflow-x:auto;"><table class="olt" style="min-width:650px;">
+        <thead><tr><th>Quote</th><th>Type</th><th>Order</th><th>Client</th><th>Location</th><th>Status</th><th>MRC</th><th>Age</th><th>Requested by</th></tr></thead>
+        <tbody>
+          <tr><td><a href="#" class="ql-link">TPMO-74991</a></td><td><span class="tyb tyb-s">Service</span></td><td style="font-size:11px;">Monitor set × 2</td><td style="font-size:11px;">Ourspace Solutions</td><td style="font-size:11px;">Glorietta 2</td><td><span class="sp sp-ful">In fulfillment</span></td><td>₱2,000</td><td><span class="age-ok">1d</span></td><td style="font-size:10px;">Client</td></tr>
+          <tr><td><a href="#" class="ql-link">TPMO-74986</a></td><td><span class="tyb tyb-s">Service</span></td><td style="font-size:11px;">Monitor bulk</td><td style="font-size:11px;">KMC Community</td><td style="font-size:11px;">BGC T1, 14F</td><td><span class="sp sp-pen">Pending</span></td><td>₱309,700</td><td><span class="age-w">3d</span></td><td style="font-size:10px;">AM: A.N.</td></tr>
+          <tr><td><a href="#" class="ql-link">TPMO-74983</a></td><td><span class="tyb tyb-s">Service</span></td><td style="font-size:11px;">Network equipment</td><td style="font-size:11px;">Apex 9V Inc.</td><td style="font-size:11px;">BGC T2, 7F</td><td><span class="sp sp-sub">Submitted</span></td><td>₱77,200</td><td><span class="age-ok">1d</span></td><td style="font-size:10px;">AM: R.G.</td></tr>
+          <tr><td><a href="#" class="ql-link">PR-2026-041</a></td><td><span class="tyb tyb-p">Purchase</span></td><td style="font-size:11px;">Custom AV setup</td><td style="font-size:11px;">Apex Zeta Inc.</td><td style="font-size:11px;">BGC T2, 20F</td><td><span class="sp sp-pen">Awaiting quote</span></td><td>—</td><td><span class="age-ok">2d</span></td><td style="font-size:10px;">AM: M.M.</td></tr>
+          <tr><td><a href="#" class="ql-link">TPMO-74821</a></td><td><span class="tyb tyb-s">Service</span></td><td style="font-size:11px;">Desktop bundle</td><td style="font-size:11px;">Vertex Corp.</td><td style="font-size:11px;">BGC T1, 9F</td><td><span class="sp sp-pen">Pending</span></td><td>₱18,500</td><td><span class="age-r">6d</span></td><td style="font-size:10px;">Client</td></tr>
+          <tr><td><a href="#" class="ql-link">TPMO-74810</a></td><td><span class="tyb tyb-s">Service</span></td><td style="font-size:11px;">Laptop — manager</td><td style="font-size:11px;">Sumisho Corp.</td><td style="font-size:11px;">Offsite</td><td><span class="sp sp-rej">Rejected</span></td><td>—</td><td><span class="age-r">7d</span></td><td style="font-size:10px;">Client</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div id="tbl-cl" style="display:none;">
+      <p style="font-size:11px;color:#6b7280;margin-bottom:7px;">Showing all 18 orders for Apex Zeta Inc.</p>
+      <div style="overflow-x:auto;"><table class="olt" style="min-width:580px;">
+        <thead><tr><th>Quote</th><th>Type</th><th>Order</th><th>Status</th><th>MRC</th><th>Lease term</th><th>Submitted</th></tr></thead>
+        <tbody>
+          <tr><td><a href="#" class="ql-link">TPMO-74991</a></td><td><span class="tyb tyb-s">Service</span></td><td style="font-size:11px;">Monitor set × 2</td><td><span class="sp sp-ful">In fulfillment</span></td><td>₱2,000</td><td style="font-size:11px;">6 months</td><td style="font-size:11px;">Jun 16</td></tr>
+          <tr><td><a href="#" class="ql-link">PR-2026-041</a></td><td><span class="tyb tyb-p">Purchase</span></td><td style="font-size:11px;">Custom AV setup</td><td><span class="sp sp-pen">Awaiting quote</span></td><td>—</td><td style="font-size:11px;">—</td><td style="font-size:11px;">Jun 15</td></tr>
+          <tr><td><a href="#" class="ql-link">TPMO-74820</a></td><td><span class="tyb tyb-s">Service</span></td><td style="font-size:11px;">i5 Desktop × 3</td><td><span class="sp sp-ok">Active</span></td><td>₱12,000</td><td style="font-size:11px;">12 months</td><td style="font-size:11px;">May 1</td></tr>
+          <tr><td><a href="#" class="ql-link">TPMO-74710</a></td><td><span class="tyb tyb-s">Service</span></td><td style="font-size:11px;">IP Phone × 8</td><td><span class="sp sp-ok">Active</span></td><td>₱8,000</td><td style="font-size:11px;">12 months</td><td style="font-size:11px;">Apr 14</td></tr>
+          <tr><td><a href="#" class="ql-link">TPMO-74650</a></td><td><span class="tyb tyb-s">Service</span></td><td style="font-size:11px;">Monitor set × 5</td><td><span class="sp sp-ren">Renewal due</span></td><td>₱5,000</td><td style="font-size:11px;color:#856404;font-weight:500;">6 months ⚠ Jul 31</td><td style="font-size:11px;">Jan 31</td></tr>
+          <tr><td><a href="#" class="ql-link">TPMO-74480</a></td><td><span class="tyb tyb-s">Service</span></td><td style="font-size:11px;">i5 Laptop × 4</td><td><span class="sp sp-ok">Active</span></td><td>₱14,000</td><td style="font-size:11px;">12 months</td><td style="font-size:11px;">Mar 20</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</div></div>
+
+</div><!-- end .ts -->
+
+<script>
+var role='am',orderFor='behalf';
+var locMap={az:['BGC Tower 2','20F'],os:['Glorietta 2','11F'],kc:['BGC Tower 1','14F'],at:['Glorietta 2','11F'],zi:['Offsite','—']};
+function setRole(r){role=r;document.getElementById('r-am').className='rpill'+(r==='am'?' on':'');document.getElementById('r-client').className='rpill'+(r==='client'?' on':'');updateAllHeaders();toggle('dash-am',r==='am');toggle('dash-client',r==='client');updateBanners();updateScreen3();toggle('tabs-am',r==='am');toggle('tabs-cl',r==='client');toggle('tbl-am',r==='am');toggle('tbl-cl',r==='client');if(r==='client'){setFor('self');toggle('for-cards',false);document.getElementById('who-title').textContent='Your order details';}else{toggle('for-cards',true);document.getElementById('who-title').textContent='Who is placing this order?';setFor('behalf');}}
+function updateAllHeaders(){var isC=role==='client',un=isC?'Apex Zeta Inc.':'AM: Majo M.',av=isC?'AZ':'MM',ac='avatar '+(isC?'av-client':'av-am');['uname0','uname1','uname2','uname3','uname4'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent=un;});['av0','av1','av2','av3','av4'].forEach(function(id){var e=document.getElementById(id);if(e){e.className=ac;e.textContent=av;}});toggle('nav0-am',!isC);toggle('nav0-cl',isC);toggle('nav4-am',!isC);toggle('nav4-cl',isC);}
+function updateBanners(){var isC=role==='client';['s2-banner','s3-banner'].forEach(function(id){var e=document.getElementById(id);if(e)e.className='cbanner '+(isC?'cb-client':'cb-am');});var via2=document.getElementById('s2-via'),via3=document.getElementById('s3-via');if(isC){if(via2){via2.textContent='Client self-service';via2.className='cltag2';}if(via3){via3.textContent='Client self-service';via3.className='cltag2';}}else{if(via2){via2.textContent='via Majo Montiflor (AM)';via2.className='amtag';}if(via3){via3.textContent='via Majo Montiflor (AM)';via3.className='amtag';}}}
+function updateScreen3(){var isSelf=role==='client'||orderFor==='self';toggle('rd-am-row',!isSelf);var cl=document.getElementById('rd-client-lbl');if(cl)cl.textContent=isSelf?'Your company / account':'Client account';var co=document.getElementById('rd-contact-lbl');if(co)co.textContent=isSelf?'Your name *':'On-site contact *';var nl=document.getElementById('rd-notif-lbl');if(nl)nl.textContent=isSelf?'Your confirmation email':'Client notification email';var t=document.getElementById('terms-text');if(t)t.innerHTML=isSelf?'I confirm that I have read and agreed to the lease terms. Lease periods begin from the confirmed delivery date. Minimum lease term is <strong>1 month</strong>. Early termination may be subject to charges per the service agreement.':'I confirm that the client <strong>Apex Zeta Inc.</strong> has agreed to the lease terms. Lease periods begin from the confirmed delivery date. Minimum lease term is <strong>1 month</strong>. Early termination may be subject to charges per the service agreement.';var mbl=document.getElementById('modal-by-lbl'),mbv=document.getElementById('modal-by-val');if(isSelf){if(mbl)mbl.textContent='Requested by (Client)';if(mbv)mbv.textContent='Client self-service';}else{if(mbl)mbl.textContent='Ordered by (AM)';if(mbv)mbv.textContent='Majo Montiflor';}}
+function toggle(id,show){var e=document.getElementById(id);if(e)e.style.display=show?'':'none';}
+function sc(i){['s0','s1','s2','s3','s4'].forEach(function(id,j){document.getElementById(id).className='screen'+(j===i?' on':'');});['t0','t1','t2','t3','t4'].forEach(function(id,j){document.getElementById(id).className='mtab'+(j===i?' on':'');});if(i===2||i===3){updateBanners();}}
+function setFor(t){orderFor=t;var fs=document.getElementById('fc-self'),fb=document.getElementById('fc-behalf');if(fs)fs.className='forcard'+(t==='self'?' sel':'');if(fb)fb.className='forcard'+(t==='behalf'?' sel':'');toggle('client-sel-wrap',t==='behalf');toggle('self-wrap',t==='self');updateScreen3();}
+function setType(t){document.getElementById('tc-svc').className='tcard'+(t==='svc'?' sel':'');document.getElementById('tc-pur').className='tcard'+(t==='pur'?' sel':'');}
+function setView(v){document.getElementById('ot-svc').className='otp'+(v==='svc'?' on':'');document.getElementById('ot-pur').className='otp'+(v==='pur'?' on':'');toggle('catalog-view',v==='svc');toggle('purchase-view',v==='pur');}
+function pickTerm(btn,cid){btn.closest('.lp').querySelectorAll('.lpill').forEach(function(p){p.className=p.className.replace(' on','');});btn.className+=' on';toggle(cid,false);}
+function pickCustom(btn,cid){btn.closest('.lp').querySelectorAll('.lpill').forEach(function(p){p.className=p.className.replace(' on','');});btn.className+=' on';var e=document.getElementById(cid);if(e)e.style.display='flex';}
+function updateLoc(sel){var v=locMap[sel.value]||['',''];document.getElementById('loc-bldg').value=v[0];document.getElementById('loc-floor').value=v[1];}
+function showModal(v){document.getElementById('modal').style.display=v?'block':'none';}
+document.querySelectorAll('.upgpill').forEach(function(p){p.addEventListener('click',function(){this.closest('.urgrow').querySelectorAll('.upgpill').forEach(function(x){x.className=x.className.replace(' on','');});this.className+=' on';});});
+sc(0);
+</script>
+</body>
+</html>
